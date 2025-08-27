@@ -1,30 +1,59 @@
-
-/*
-supabase/functions/contact/index.ts
-*/
+// supabase/functions/contact/index.ts
 import { serve } from "https://deno.land/std@0.203.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
 serve(async (req) => {
-  if (req.method !== 'POST') return new Response(JSON.stringify({ success: false, error: 'Method not allowed' }), { status: 405, headers: { 'Content-Type': 'application/json' } });
+  // preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ success: false, error: "Method not allowed" }), {
+      status: 405,
+      headers: CORS_HEADERS,
+    });
+  }
+
   try {
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const body = await req.json();
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return new Response(JSON.stringify({ success: false, error: "Server not configured" }), { status: 500, headers: CORS_HEADERS });
+    }
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const body = await req.json();
-    const forwarded = req.headers.get('x-forwarded-for') || '';
-    const ipFromHeader = forwarded.split(',')[0].trim();
-    const ip = ipFromHeader || (req.headers.get('x-real-ip') ?? 'unknown');
+    // IP tespiti (proxy destekli)
+    const forwarded = req.headers.get("x-forwarded-for") ?? "";
+    const ipFromHeader = forwarded.split(",")[0].trim();
+    const ip = ipFromHeader || (req.headers.get("x-real-ip") ?? "unknown");
 
-    const { error } = await supabase.from('contacts').insert([{
-      name: body.name, surname: body.surname, email: body.email, phone: body.phone, message: body.message, ip: ip
-    }]);
+    const payload = {
+      name: body.name ?? null,
+      surname: body.surname ?? null,
+      email: body.email ?? null,
+      phone: body.phone ?? null,
+      message: body.message ?? null,
+      ip
+    };
 
-    if (error) return new Response(JSON.stringify({ success: false, error: error.message }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    const { error } = await supabase.from("contacts").insert([payload]);
 
-    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    if (error) {
+      return new Response(JSON.stringify({ success: false, error: error.message }), { status: 400, headers: CORS_HEADERS });
+    }
+
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: CORS_HEADERS });
   } catch (err) {
-    return new Response(JSON.stringify({ success: false, error: String(err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ success: false, error: String(err) }), { status: 500, headers: CORS_HEADERS });
   }
 });
