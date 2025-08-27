@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+}
+header {
+  background: #111;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+nav a {
+  color: white;
+  margin: 0 1rem;
+  text-decoration: none;
+}
+nav a:hover {
+  color: cyan;
+}
+footer {
+  background: #111;
+  padding: 1rem;
+  text-align: center;
+  color: #aaa;
+}
