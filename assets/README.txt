@@ -1,0 +1,1 @@
+Put these files into your project's assets/ folder. Replace with real images later.
