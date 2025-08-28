@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:   # <-- Job seviyesinde ekledik
+    env:   
       SUPABASE_URL: ${{ secrets.PROJECT_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SERVICE_ROLE_KEY }}
 
