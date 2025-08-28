@@ -8,6 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:   # <-- Job seviyesinde ekledik
+      SUPABASE_URL: ${{ secrets.PROJECT_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SERVICE_ROLE_KEY }}
 
     steps:
       - uses: actions/checkout@v3
@@ -19,8 +22,6 @@ jobs:
           npm install -g supabase
 
       - name: Deploy functions
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SERVICE_ROLE_KEY }}
-          SUPABASE_PROJECT_URL: ${{ secrets.PROJECT_URL }}
         run: |
-          supabase functions deploy contact
+          supabase login --service-role $SUPABASE_SERVICE_ROLE_KEY
+          supabase functions deploy contact --project-ref $SUPABASE_URL
