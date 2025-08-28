@@ -3,26 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact</title>
-  <link rel="stylesheet" href="/style.css">
+  <title>Contact Us - Music Label</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background-color: #000; color: #fff; font-family: 'Arial', sans-serif; margin:0; padding:0; }
+    header { padding: 20px; text-align: center; background-color: #111; }
+    nav a { color: #fff; margin: 0 15px; text-decoration: none; }
+    main { padding: 30px; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 15px; }
+    input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #555; border-radius: 5px; background-color: #111; color: #fff; }
+    button { margin-top: 20px; padding: 10px 20px; border: none; background-color: #0ff; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; }
+    .social-icons { margin-top: 30px; text-align: center; }
+    .social-icons a { margin: 0 10px; color: #0ff; font-size: 24px; text-decoration: none; }
+  </style>
 </head>
 <body>
   <header>
     <h1>Contact Us</h1>
     <nav>
-      <a href="/">Home</a>
-      <a href="/artists.html">Artists</a>
-      <a href="/contact.html">Contact</a>
+      <a href="index.html">Home</a>
+      <a href="artists.html">Artists</a>
+      <a href="contact.html">Contact</a>
     </nav>
   </header>
+
   <main>
     <form id="contact-form">
-      <label>Name</label><input type="text" name="name" required><br>
-      <label>Email</label><input type="email" name="email" required><br>
-      <label>Phone</label><input type="text" name="phone"><br>
-      <label>Message</label><textarea name="message"></textarea><br>
+      <label>Name</label>
+      <input type="text" name="name" required>
+
+      <label>Email</label>
+      <input type="email" name="email" required>
+
+      <label>Phone</label>
+      <input type="text" name="phone">
+
+      <label>Message</label>
+      <textarea name="message"></textarea>
+
       <button type="submit">Send</button>
     </form>
+
+    <div class="social-icons">
+      <a href="https://instagram.com/" target="_blank">Instagram</a>
+      <a href="https://youtube.com/" target="_blank">YouTube</a>
+      <a href="mailto:business@label.com">Email</a>
+    </div>
   </main>
+
+  <script>
+    // Tek yapman gereken buraya deploy ettiğin Supabase Function URL'ini yazmak
+    const FORM_URL = "https://<your-function-url>.functions.supabase.co/contact"
+
+    const form = document.getElementById('contact-form')
+    form.addEventListener('submit', async e => {
+      e.preventDefault()
+      const data = Object.fromEntries(new FormData(form))
+      const res = await fetch(FORM_URL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      if(res.ok) alert("Message sent!")
+      else alert("Error sending message")
+    })
+  </script>
 </body>
 </html>
