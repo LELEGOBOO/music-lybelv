@@ -9,9 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_URL: ${{ secrets.PROJECT_URL }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SERVICE_ROLE_KEY }}
-      SUPABASE_ANON_KEY: ${{ secrets.ANON_KEY }}
+      PROJECT_URL: ${{ secrets.PROJECT_URL }}
+      SERVICE_ROLE_KEY: ${{ secrets.SERVICE_ROLE_KEY }}
+      ANON_KEY: ${{ secrets.ANON_KEY }}
 
     steps:
       - uses: actions/checkout@v3
@@ -24,5 +24,5 @@ jobs:
 
       - name: Deploy functions
         run: |
-          supabase login --service-role $SUPABASE_SERVICE_ROLE_KEY
-          supabase functions deploy contact --project-ref $SUPABASE_URL
+          supabase login --service-role $SERVICE_ROLE_KEY
+          supabase functions deploy contact --project-ref $PROJECT_URL
